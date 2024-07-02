@@ -14,3 +14,11 @@ Change Log
       :date: yyyy-mm-dd
 
       Change log here.
+
+1.0a0
+=====
+
+.. version:: _
+   :date: 2024-07-03
+
+The first alpha version is out, enjoy~

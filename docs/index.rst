@@ -8,6 +8,17 @@ Introduction
 
 .. ADDITIONAL CONTENT START
 
+A Sphinx builder specialized for **fast incremental HTML** build.
+
+The builtin HTML builder (``StandaloneHTMLBuilder``) supports incremental build
+too, but it have to do a lot of extra work to ensure document consistency, such
+as: updating glob toctree, updating domain index, deal with config changed, and
+so on. The fasthtml builder wraps the builtin one and **skips almost all
+operations that slow down the build** and left only the necessary parts.
+
+If you often need to edit and build Sphinx documents locally, and you only want
+to preview the parts you modified, the fasthtml builder will be helpful to you. 
+
 .. ADDITIONAL CONTENT END
 
 Getting Started
@@ -38,6 +49,19 @@ Then, add the extension name to ``extensions`` configuration item in your conf.p
 .. _conf.py: https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 .. ADDITIONAL CONTENT START
+
+Then you can run the builder:
+
+.. code-block:: console
+
+   $ sphinx-build -b fasthtml <sourcedir> <outputdir>
+
+For users who build document through Makefile, it is recommended to modify the
+catch-all target as following:
+
+.. literalinclude:: Makefile
+   :language: make
+   :lines: 20-
 
 .. ADDITIONAL CONTENT END
 
