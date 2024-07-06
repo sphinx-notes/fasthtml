@@ -9,22 +9,18 @@ SPHINXBUILD   = python3 -msphinx
 SOURCEDIR     = .
 BUILDDIR      = _build
 
-default: fasthtml
+default: fast
 
 # Put it first so that "make" without argument is like "make help".
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-.PHONY: help Makefile default
+.PHONY: help Makefile default fast
 
-# Catch-all target: route all unknown targets to Sphinx builder.
-# $(O) is meant as a shortcut for $(SPHINXOPTS).
-#
-# NOTE: We want the html builder and fasthtml builder share same outdir.
-#
-# 	1. Don't use the make mode (-M) because it forces $(BUILDDIR)/$(BUILDERNAME)
-# 		as outdir
-# 	2. The $(if ...) expr returns "html" as outdir for when fasthtml builder is
-# 		specified, otherwise return the original builder name
+# Catch-all target: route all unknown targets to Sphinx using the new
+# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
-	@$(SPHINXBUILD) -b $@ "$(SOURCEDIR)" "$(BUILDDIR)/$(if $@=fasthtml,html,$@)" $(SPHINXOPTS) $(O) 
+	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+fast: Makefile
+	@$(SPHINXBUILD) -b fasthtml "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) $(O)

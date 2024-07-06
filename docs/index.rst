@@ -70,18 +70,21 @@ Then, add the extension name to ``extensions`` configuration item in your
 
 .. ADDITIONAL CONTENT START
 
-Then you can run the builder:
+Then you can run the ``fasthtml`` builder:
 
 .. code-block:: console
 
    $ sphinx-build -b fasthtml <sourcedir> <outputdir>
 
-For users who build document through Makefile, it is recommended to modify the
-catch-all target as following:
+For Makefile users, it is recommended to add the following lines to your
+Makefile, to share ``outputdir`` betweens the ``fasthtml`` builder and the
+builtin ``html`` builder:
 
 .. literalinclude:: Makefile
    :language: make
-   :lines: 20-
+   :lines: 25-
+
+Then use ``make fast`` to run the fast HTML build.
 
 .. ADDITIONAL CONTENT END
 
