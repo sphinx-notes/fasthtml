@@ -2,7 +2,7 @@
     sphinxnotes.fasthtml
     ~~~~~~~~~~~~~~~~~~~~
 
-    Sphinx builder specialized for fast incremental HTML build 
+    Sphinx builder specialized for fast incremental HTML build
 
     :copyright: Copyright 2024 Shengyu Zhang
     :license: BSD, see LICENSE for details.
@@ -10,7 +10,6 @@
 TODO:
 
 - [ ] skip 'checking consistency'
-- [ ] why always [config changed ('gettext_auto_build')]?
 - [ ] config-able.
 
 """
@@ -37,7 +36,7 @@ class FastHTMLBuilder(StandaloneHTMLBuilder):
         # to ensure that the behavior with StandaloneHTMLBuilderi as same
         # as possible.
         #
-        # Otherwise, different builde name causes troubles: 
+        # Otherwise, different builde name causes troubles:
         #
         # - Builder.tags will be different (see Builder.init()), which leads
         #   to BuildInfo changes, finally leads Builder.get_outdated_docs()
@@ -55,25 +54,53 @@ class FastHTMLBuilder(StandaloneHTMLBuilder):
         pass # skip gen
 
 
+    def _overwrite_config(self) -> None:
+        """
+        Overwrite sphinx.config.Config to skip some operations that slow down
+        the build.
+
+        Should be called before builder.Builder.read().
+        """
+        self._old_config = {}
+        def overwrite(name, val, optional=False):
+            if optional and not hasattr(self.config, name):
+                return
+            self._old_config[name] = getattr(self.config, name)
+            setattr(self.config, name, val)
+
+        overwrite('html_domain_indices', False)
+        # Do not build mo files.
+        overwrite('gettext_auto_build', False)
+        # Prevent intersphinx cache expiration.
+        overwrite('intersphinx_cache_limit', -1, optional=True)
+
+
+    def _restore_config(self) -> None:
+        """
+        Restore sphinx.config.Config to keep sphinx.application.ENV_PICKLE_FILENAME
+        unchanged.
+
+        Must be called before pickle file is dumped to disk.
+        """
+        for name, val in self._old_config.items():
+            setattr(self.config, name, val)
+        self._old_config = {}
+
+
 def _on_builder_inited(app: Sphinx):
     if not isinstance(app.builder, FastHTMLBuilder):
         return
 
-    # Disable general index.
-    app.config.html_use_index = False # type: ignore
-    app.builder.use_index = False
-    # Disable domain-specific indices.
-    app.config.html_domain_indices = False # type: ignore
+    app.builder._overwrite_config()
 
+    # Don't use index.
+    app.builder.use_index = False
     # Disable search.
     app.builder.search = False
 
     # Do not update toctree.
     app.env.glob_toctrees = set()
     app.env.reread_always = set() # marked by env.note_reread()
-
-    # Do not build mo files.
-    app.config.gettext_auto_build = False # type: ignore
 
 
 def _on_env_get_outdated(app: Sphinx, env: BuildEnvironment, added: set[str],
@@ -100,8 +127,17 @@ def _on_env_get_outdated(app: Sphinx, env: BuildEnvironment, added: set[str],
 
     return []
 
+
+def _on_env_updated(app: Sphinx, env: BuildEnvironment):
+    if not isinstance(app.builder, FastHTMLBuilder):
+        return []
+
+    app.builder._restore_config()
+
+
 def setup(app: Sphinx):
     app.connect('builder-inited', _on_builder_inited, priority=100)
     app.connect('env-get-outdated', _on_env_get_outdated)
+    app.connect('env-updated', _on_env_updated)
 
     app.add_builder(FastHTMLBuilder)
