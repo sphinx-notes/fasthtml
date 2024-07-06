@@ -5,7 +5,6 @@
 sphinxnotes-fasthtml
 ====================
 
-
 .. |docs| image:: https://img.shields.io/github/deployments/sphinx-notes/fasthtml/github-pages
    :target: https://sphinx.silverrainz.me/fasthtml
    :alt: Documentation Status
@@ -26,8 +25,11 @@ sphinxnotes-fasthtml
 
 Sphinx builder specialized for fast incremental HTML build.
 
-* Documentation: https://sphinx.silverrainz.me/fasthtml
-* Source: https://github.com/sphinx-notes/fasthtml
-* Changelog: https://sphinx.silverrainz.me/fasthtml/changelog.html
-* Tracker: https://github.com/sphinx-notes/fasthtml/issues
-* Download: https://pypi.org/project/sphinxnotes-fasthtml/#files
+.. INTRODUCTION START 
+   (MUST written in standard reStructuredText, without Sphinx stuff)
+
+.. INTRODUCTION END
+
+Please refer to Documentation_ for more details.
+
+.. _Documentation: https://sphinx.silverrainz.me/fasthtml

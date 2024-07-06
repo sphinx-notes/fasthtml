@@ -1,12 +1,32 @@
 .. This file is generated from sphinx-notes/cookiecutter.
    You need to consider modifying the TEMPLATE or modifying THIS FILE.
 
-.. include:: ../README.rst
+====================
+sphinxnotes-fasthtml
+====================
+
+.. |docs| image:: https://img.shields.io/github/deployments/sphinx-notes/fasthtml/github-pages
+   :target: https://sphinx.silverrainz.me/fasthtml
+   :alt: Documentation Status
+
+.. |license| image:: https://img.shields.io/github/license/sphinx-notes/fasthtml
+   :target: https://github.com/sphinx-notes/fasthtml/blob/master/LICENSE
+   :alt: Open Source License
+
+.. |pypi| image:: https://img.shields.io/pypi/v/sphinxnotes-fasthtml.svg
+   :target: https://pypi.python.org/pypi/sphinxnotes-fasthtml
+   :alt: PyPI Package
+
+.. |download| image:: https://img.shields.io/pypi/dm/sphinxnotes-fasthtml
+   :target: https://pypi.python.org/pypi/sphinxnotes-fasthtml
+   :alt: PyPI Package Downloads
+
+|docs| |license| |pypi| |download|
 
 Introduction
 ============
 
-.. ADDITIONAL CONTENT START
+.. INTRODUCTION START
 
 A Sphinx builder specialized for **fast incremental HTML** build.
 
@@ -16,9 +36,9 @@ updating index, etc.) The fasthtml builder **skips almost all operations that
 slow down the build** and left only the necessary parts.
 
 If you often need to edit and build Sphinx documents locally, and only want to
-preview the parts you modified, the fasthtml builder will be helpful to you. 
+preview the parts you modified, the fasthtml builder will be helpful to you.
 
-.. ADDITIONAL CONTENT END
+.. INTRODUCTION END
 
 Getting Started
 ===============
@@ -34,7 +54,8 @@ First, downloading extension from PyPI:
 
    $ pip install sphinxnotes-fasthtml
 
-Then, add the extension name to ``extensions`` configuration item in your conf.py_:
+Then, add the extension name to ``extensions`` configuration item in your
+:parsed_literal:`conf.py_`:
 
 .. code-block:: python
 
