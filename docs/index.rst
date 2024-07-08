@@ -30,10 +30,12 @@ Introduction
 
 A Sphinx builder specialized for **fast incremental HTML** build.
 
-The builtin HTML builder supports incremental build too, but it have to do a
-lot of extra work to ensure document consistency (such as updating glob toctree,
-updating index, etc.) The fasthtml builder **skips almost all operations that
-slow down the build** and left only the necessary parts.
+
+The builtin :py:class:`~sphinx.builders.html.StandaloneHTMLBuilder` supports
+incremental build too, but it have to do a lot of extra work to ensure document
+consistency (such as updating glob toctree, updating index, etc.) The fasthtml
+builder **skips almost all operations that slow down the build** and left only
+the necessary parts.
 
 If you often need to edit and build Sphinx documents locally, and only want to
 preview the parts you modified, the fasthtml builder will be helpful to you.
@@ -84,7 +86,7 @@ builtin ``html`` builder:
    :language: make
    :lines: 25-
 
-Then use ``make fast`` to run the fast HTML build.
+Then use ``make fasthtml`` to run the fast HTML build.
 
 .. ADDITIONAL CONTENT END
 

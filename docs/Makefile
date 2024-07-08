@@ -9,7 +9,7 @@ SPHINXBUILD   = python3 -msphinx
 SOURCEDIR     = .
 BUILDDIR      = _build
 
-default: fast
+default: fasthtml
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -22,5 +22,7 @@ help:
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-fast: Makefile
-	@$(SPHINXBUILD) -b fasthtml "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) $(O)
+# Without "make mode" we can specify OUTPUTDIR and DOCTREEDIR precisely
+# so that we can make sure to share all output with the HTML builder.
+fasthtml: Makefile
+	@$(SPHINXBUILD) -b $@ "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) $(O) -d "$(BUILDDIR)/doctrees"
