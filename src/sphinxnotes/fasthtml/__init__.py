@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 
 from sphinx.builders.html import StandaloneHTMLBuilder
 from sphinx.util import logging
-from sphinx.environment import CONFIG_OK
+from sphinx.environment import CONFIG_CHANGED, CONFIG_EXTENSIONS_CHANGED
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
@@ -108,9 +108,9 @@ def _on_env_get_outdated(app: Sphinx, env: BuildEnvironment, added: set[str],
     if not isinstance(app.builder, FastHTMLBuilder):
         return []
 
-    # Config changes causes a fully rebuild, I don't want this.
-    if env.config_status != CONFIG_OK:
-        # Require the env to recalculate which docs should be rebuilt when the
+    # Do not trigger a full rebuild when config changed.
+    if env.config_status in [CONFIG_CHANGED, CONFIG_EXTENSIONS_CHANGED]:
+        # Require the env to re-calculate which docs should be rebuilt when the
         # configuration has *NOT* changed.
         added2, changed2, removed2 = env.get_outdated_files(config_changed=False)
 
