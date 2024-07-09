@@ -62,13 +62,14 @@ class FastHTMLBuilder(StandaloneHTMLBuilder):
         Should be called before builder.Builder.read().
         """
         self._old_config = {}
-        def overwrite(name, val, optional=False):
+        def overwrite(name, val, optional=False, restore=True):
             if optional and not hasattr(self.config, name):
                 return
-            self._old_config[name] = getattr(self.config, name)
+            if restore:
+                self._old_config[name] = getattr(self.config, name)
             setattr(self.config, name, val)
 
-        overwrite('html_domain_indices', False)
+        overwrite('html_domain_indices', False, restore=False)
         # Do not build mo files.
         overwrite('gettext_auto_build', False)
         # Prevent intersphinx cache expiration.
