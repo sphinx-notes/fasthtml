@@ -4,10 +4,11 @@
 set -e
 
 sphinxver=v7.3.7
+sphinxopts=-Q
 mktarget=$(tail -n+25 $(git rev-parse --show-toplevel)/docs/Makefile)
 
 tmpdir=$(mktemp -d)
-echo $tmpdir
+echo "tmpdir: $tmpdir"
 cd $tmpdir
 
 python --version
@@ -19,21 +20,21 @@ pip show sphinx sphinxnotes-fasthtml
 
 compare() {
     echo "" >> index.rst
-    make SPHINXOPTS=-Q html
+    make SPHINXOPTS=$sphinxopts html
     echo ">>> Standard build"
     echo "Another line" >> index.rst
-    time make SPHINXOPTS=-Q html
+    time make SPHINXOPTS=$sphinxopts html
     echo ">>> Fast build"
     echo "Another line" >> index.rst
-    time make SPHINXOPTS=-Q fasthtml
+    time make SPHINXOPTS=$sphinxopts fasthtml
 }
 
 echo "=== Sphinx"
 git clone --quiet --branch $sphinxver --depth 1 https://github.com/sphinx-doc/sphinx.git >/dev/null
 cd sphinx/doc
 echo "extensions.append('sphinxnotes.fasthtml')" >> conf.py
-echo $mktarget >> Makefile
+echo "$mktarget" >> Makefile
 compare
 cd ..
 
-# rm -rf $tmpdir
+rm -rf $tmpdir
