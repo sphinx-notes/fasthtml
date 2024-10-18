@@ -7,8 +7,6 @@ on:
 
 jobs:
   release:
-    name: Publish Github Release
-    needs: [pypi]
     runs-on: ubuntu-latest
     permissions:
       contents: write
