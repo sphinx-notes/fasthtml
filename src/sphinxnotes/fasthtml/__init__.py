@@ -15,17 +15,19 @@ TODO:
 
 from __future__ import annotations
 from typing import TYPE_CHECKING
+import functools
 
 from sphinx.builders.html import StandaloneHTMLBuilder
 from sphinx.util import logging
 from sphinx.environment import CONFIG_CHANGED, CONFIG_EXTENSIONS_CHANGED
 from sphinx.util.display import progress_message, SkipProgressMessage
 from sphinx.locale import __
+from sphinx.environment import BuildEnvironment
 
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
-    from sphinx.environment import BuildEnvironment
+    from sphinx.builders import Builder
 
 logger = logging.getLogger(__name__)
 
@@ -106,8 +108,18 @@ class FastHTMLBuilder(StandaloneHTMLBuilder):
         self._old_config = {}
 
 
+def _dummy_check_consistency() -> None:
+    """Used to overwrte :meth:`BuildEnvironment.check_consistency`, for 
+    skipping the consistency checking of Sphinx.
+    """
+    raise SkipProgressMessage
+
+
 def _on_builder_inited(app: Sphinx):
     if not isinstance(app.builder, FastHTMLBuilder):
+        # Restore env.check_consistency.
+        if app.env.check_consistency == _dummy_check_consistency:
+            app.env.check_consistency = functools.partial(BuildEnvironment.check_consistency, app.env)
         return
 
     app.builder._overwrite_config()
@@ -121,18 +133,8 @@ def _on_builder_inited(app: Sphinx):
     app.env.glob_toctrees = set()
     app.env.reread_always = set()  # marked by env.note_reread()
 
-
-original_check_consistency = None
-"""Original value of :meth:`BuildEnvironment.check_consistency`."""
-
-
-def dummy_check_consistency() -> None:
-    """Used to skip the consistency checking of Sphinx by overwriting
-    :meth:`BuildEnvironment.check_consistency`.
-
-    The function is called from :meth:`Builder.build`.
-    """
-    raise SkipProgressMessage
+    # Overwrite env.check_consistency to skip consistency checking.
+    app.env.check_consistency = _dummy_check_consistency
 
 
 def _on_env_get_outdated(
@@ -142,18 +144,8 @@ def _on_env_get_outdated(
     changed: set[str],
     removed: set[str],
 ) -> list[str]:
-    global original_check_consistency
     if not isinstance(app.builder, FastHTMLBuilder):
-        # Restore check_consistency method.
-        if env.check_consistency == dummy_check_consistency:
-            env.check_consistency = original_check_consistency
         return []
-
-    # Overwrite :meth:`BuildEnvironment.check_consistency` to skip consistency
-    # checking.
-    if env.check_consistency != dummy_check_consistency:
-        original_check_consistency = env.check_consistency
-        env.check_consistency = dummy_check_consistency
 
     # Do not trigger a full rebuild when config changed.
     if env.config_status in [CONFIG_CHANGED, CONFIG_EXTENSIONS_CHANGED]:
