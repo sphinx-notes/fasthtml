@@ -9,21 +9,25 @@
 
 TODO:
 
-- [ ] skip 'checking consistency'
 - [ ] config-able.
+- [ ] copy files? such as download-able files.
 
 """
 
 from __future__ import annotations
 from typing import TYPE_CHECKING
+import functools
 
 from sphinx.builders.html import StandaloneHTMLBuilder
 from sphinx.util import logging
 from sphinx.environment import CONFIG_CHANGED, CONFIG_EXTENSIONS_CHANGED
+from sphinx.util.display import progress_message, SkipProgressMessage
+from sphinx.locale import __
+from sphinx.environment import BuildEnvironment
+
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
-    from sphinx.environment import BuildEnvironment
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +56,22 @@ class FastHTMLBuilder(StandaloneHTMLBuilder):
 
     def gen_pages_from_extensions(self) -> None:
         pass  # skip gen
+
+    @progress_message(__('writing additional pages'))
+    def gen_additional_pages(self) -> None:
+        raise SkipProgressMessage
+
+    @progress_message(__('generating indices'))
+    def gen_indices(self) -> None:
+        """We totally skipped index generation here, but we stil need to disable
+        :attr:`Builder.use_index` (see _on_builder_inited) and ``html_domain_indices``
+        (see _overwrite_config), to prevent the overhead of collecting index data.
+        """
+        raise SkipProgressMessage
+
+    @progress_message(__('dumping object inventory'))
+    def dump_inventory(self) -> None:
+        raise SkipProgressMessage
 
     def _overwrite_config(self) -> None:
         """
@@ -88,8 +108,20 @@ class FastHTMLBuilder(StandaloneHTMLBuilder):
         self._old_config = {}
 
 
+def _dummy_check_consistency() -> None:
+    """Used to overwrte :meth:`BuildEnvironment.check_consistency`, for
+    skipping the consistency checking of Sphinx.
+    """
+    raise SkipProgressMessage
+
+
 def _on_builder_inited(app: Sphinx):
     if not isinstance(app.builder, FastHTMLBuilder):
+        # Restore env.check_consistency.
+        if app.env.check_consistency == _dummy_check_consistency:
+            app.env.check_consistency = functools.partial(
+                BuildEnvironment.check_consistency, app.env
+            )
         return
 
     app.builder._overwrite_config()
@@ -102,6 +134,9 @@ def _on_builder_inited(app: Sphinx):
     # Do not update toctree.
     app.env.glob_toctrees = set()
     app.env.reread_always = set()  # marked by env.note_reread()
+
+    # Overwrite env.check_consistency to skip consistency checking.
+    app.env.check_consistency = _dummy_check_consistency
 
 
 def _on_env_get_outdated(
