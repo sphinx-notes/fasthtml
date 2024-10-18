@@ -15,22 +15,26 @@ python --version
 python -m venv .
 source ./bin/activate
 
+pip_version() {
+    python -m pip show $1 | grep Version | cut -d ' ' -f2
+}
+
 python -m pip install sphinx==$sphinxver sphinxnotes-fasthtml >/dev/null
-pip show sphinx sphinxnotes-fasthtml
+echo "Sphinx: $(pip_version sphinx)"
+echo "sphinxnotes-fasthtml: $(pip_version sphinxnotes-fasthtml)"
 
 compare() {
-    echo "" >> index.rst
+    touch index.rst
     make SPHINXOPTS=$sphinxopts html
     echo ">>> Standard build"
-    echo "Another line" >> index.rst
+    touch index.rst
     time make SPHINXOPTS=$sphinxopts html
     echo ">>> Fast build"
-    echo "Another line" >> index.rst
+    touch index.rst
     time make SPHINXOPTS=$sphinxopts fasthtml
 }
 
-echo "=== Sphinx"
-git clone --quiet --branch $sphinxver --depth 1 https://github.com/sphinx-doc/sphinx.git >/dev/null
+git clone --quiet --branch $sphinxver --depth 1 https://github.com/sphinx-doc/sphinx.git 2>/dev/null
 cd sphinx/doc
 echo "extensions.append('sphinxnotes.fasthtml')" >> conf.py
 echo "$mktarget" >> Makefile
