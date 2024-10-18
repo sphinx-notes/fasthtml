@@ -30,15 +30,23 @@ Introduction
 
 A Sphinx builder specialized for **fast incremental HTML** build.
 
+Sphinx's HTML builder does a lot of works to ensure document consistency
+(such as updating glob toctree, updating index, etc.) The fasthtml builder
+**skips almost all operations that slow down the build** and left only the
+necessary parts.
 
-The builtin :py:class:`~sphinx.builders.html.StandaloneHTMLBuilder` supports
-incremental build too, but it have to do a lot of extra work to ensure document
-consistency (such as updating glob toctree, updating index, etc.) The fasthtml
-builder **skips almost all operations that slow down the build** and left only
-the necessary parts.
+If you only want the document you modified to be updated, without paying
+attention to the consistency of other places, the fasthtml builder will be
+helpful to you.
 
-If you often need to edit and build Sphinx documents locally, and only want to
-preview the parts you modified, the fasthtml builder will be helpful to you.
+.. note::
+
+   This extension relies on the internal implementation of HTML builder
+   (:py:class:`~sphinx.builders.html.StandaloneHTMLBuilder`), it may not be
+   compatible with older or future Sphinx versions.
+
+   So **DO NOT report to Sphinx first if you suffered crash**, please report to
+   here :issue:`new` instead.
 
 .. INTRODUCTION END
 
