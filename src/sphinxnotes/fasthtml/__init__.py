@@ -9,7 +9,6 @@
 
 TODO:
 
-- [ ] skip 'checking consistency'
 - [ ] config-able.
 
 """
@@ -20,6 +19,9 @@ from typing import TYPE_CHECKING
 from sphinx.builders.html import StandaloneHTMLBuilder
 from sphinx.util import logging
 from sphinx.environment import CONFIG_CHANGED, CONFIG_EXTENSIONS_CHANGED
+from sphinx.util.display import progress_message, SkipProgressMessage
+from sphinx.locale import __
+
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
@@ -52,6 +54,11 @@ class FastHTMLBuilder(StandaloneHTMLBuilder):
 
     def gen_pages_from_extensions(self) -> None:
         pass  # skip gen
+
+    @progress_message(__('writing additional pages'))
+    def gen_additional_pages(self) -> None:
+        raise SkipProgressMessage
+
 
     def _overwrite_config(self) -> None:
         """
@@ -104,6 +111,19 @@ def _on_builder_inited(app: Sphinx):
     app.env.reread_always = set()  # marked by env.note_reread()
 
 
+original_check_consistency = None
+"""Original value of :meth:`BuildEnvironment.check_consistency`."""
+
+
+def dummy_check_consistency() -> None:
+    """Used to skip the consistency checking of Sphinx by overwriting
+    :meth:`BuildEnvironment.check_consistency`.
+
+    The function is called from :meth:`Builder.build`.
+    """
+    raise SkipProgressMessage
+
+
 def _on_env_get_outdated(
     app: Sphinx,
     env: BuildEnvironment,
@@ -111,8 +131,18 @@ def _on_env_get_outdated(
     changed: set[str],
     removed: set[str],
 ) -> list[str]:
+    global original_check_consistency
     if not isinstance(app.builder, FastHTMLBuilder):
+        # Restore check_consistency method.
+        if env.check_consistency == dummy_check_consistency:
+            env.check_consistency = original_check_consistency
         return []
+
+    # Overwrite :meth:`BuildEnvironment.check_consistency` to skip consistency
+    # checking.
+    if env.check_consistency != dummy_check_consistency:
+        original_check_consistency = env.check_consistency
+        env.check_consistency = dummy_check_consistency
 
     # Do not trigger a full rebuild when config changed.
     if env.config_status in [CONFIG_CHANGED, CONFIG_EXTENSIONS_CHANGED]:
