@@ -10,6 +10,7 @@
 TODO:
 
 - [ ] config-able.
+- [ ] copy files? such as download-able files.
 
 """
 
@@ -27,7 +28,6 @@ from sphinx.environment import BuildEnvironment
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
-    from sphinx.builders import Builder
 
 logger = logging.getLogger(__name__)
 
@@ -109,7 +109,7 @@ class FastHTMLBuilder(StandaloneHTMLBuilder):
 
 
 def _dummy_check_consistency() -> None:
-    """Used to overwrte :meth:`BuildEnvironment.check_consistency`, for 
+    """Used to overwrte :meth:`BuildEnvironment.check_consistency`, for
     skipping the consistency checking of Sphinx.
     """
     raise SkipProgressMessage
@@ -119,7 +119,9 @@ def _on_builder_inited(app: Sphinx):
     if not isinstance(app.builder, FastHTMLBuilder):
         # Restore env.check_consistency.
         if app.env.check_consistency == _dummy_check_consistency:
-            app.env.check_consistency = functools.partial(BuildEnvironment.check_consistency, app.env)
+            app.env.check_consistency = functools.partial(
+                BuildEnvironment.check_consistency, app.env
+            )
         return
 
     app.builder._overwrite_config()
