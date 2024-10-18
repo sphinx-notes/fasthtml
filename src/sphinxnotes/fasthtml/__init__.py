@@ -59,6 +59,17 @@ class FastHTMLBuilder(StandaloneHTMLBuilder):
     def gen_additional_pages(self) -> None:
         raise SkipProgressMessage
 
+    @progress_message(__('generating indices'))
+    def gen_indices(self) -> None:
+        """We totally skipped index generation here, but we stil need to disable
+        :attr:`Builder.use_index` (see _on_builder_inited) and ``html_domain_indices``
+        (see _overwrite_config), to prevent the overhead of collecting index data.
+        """
+        raise SkipProgressMessage
+
+    @progress_message(__('dumping object inventory'))
+    def dump_inventory(self) -> None:
+        raise SkipProgressMessage
 
     def _overwrite_config(self) -> None:
         """
