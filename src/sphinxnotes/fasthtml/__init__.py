@@ -27,6 +27,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
 class FastHTMLBuilder(StandaloneHTMLBuilder):
     name = 'fasthtml'
 
@@ -49,10 +50,8 @@ class FastHTMLBuilder(StandaloneHTMLBuilder):
         self.name = StandaloneHTMLBuilder.name
         super().__init__(app, env)
 
-
     def gen_pages_from_extensions(self) -> None:
-        pass # skip gen
-
+        pass  # skip gen
 
     def _overwrite_config(self) -> None:
         """
@@ -62,6 +61,7 @@ class FastHTMLBuilder(StandaloneHTMLBuilder):
         Should be called before builder.Builder.read().
         """
         self._old_config = {}
+
         def overwrite(name, val, optional=False, restore=True):
             if optional and not hasattr(self.config, name):
                 return
@@ -75,7 +75,6 @@ class FastHTMLBuilder(StandaloneHTMLBuilder):
         # Prevent intersphinx cache expiration.
         # See also https://github.com/sphinx-doc/sphinx/pull/12514
         overwrite('intersphinx_cache_limit', 999, optional=True)
-
 
     def _restore_config(self) -> None:
         """
@@ -102,11 +101,16 @@ def _on_builder_inited(app: Sphinx):
 
     # Do not update toctree.
     app.env.glob_toctrees = set()
-    app.env.reread_always = set() # marked by env.note_reread()
+    app.env.reread_always = set()  # marked by env.note_reread()
 
 
-def _on_env_get_outdated(app: Sphinx, env: BuildEnvironment, added: set[str],
-                         changed: set[str], removed: set[str]) -> list[str]:
+def _on_env_get_outdated(
+    app: Sphinx,
+    env: BuildEnvironment,
+    added: set[str],
+    changed: set[str],
+    removed: set[str],
+) -> list[str]:
     if not isinstance(app.builder, FastHTMLBuilder):
         return []
 
@@ -117,7 +121,9 @@ def _on_env_get_outdated(app: Sphinx, env: BuildEnvironment, added: set[str],
         added2, changed2, removed2 = env.get_outdated_files(config_changed=False)
 
         def clear_and_update(dst, src):
-            dst.clear(); dst.update(src)
+            dst.clear()
+            dst.update(src)
+
         # sphinx.builders.Builder.read [#]_ saids "allow user intervention" when
         # emitting "env-get-outdated" signal. My understanding is that it allows
         # us to modify the docnames sets set passed in.
