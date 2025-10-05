@@ -90,3 +90,9 @@ bump-version-done:
 ################################################################################
 # CUSTOM TARGETS
 ################################################################################
+
+.PHONY: bench bench-cahced
+bench:
+	./utils/bench.sh
+bench-cahced:
+	USE_CACHE=1 ./utils/bench.sh
