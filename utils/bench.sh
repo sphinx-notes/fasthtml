@@ -7,10 +7,10 @@ sphinx_ver=v8.2.3
 sphinx_opts=-Q
 mk_target=$(tail -n+25 $(git rev-parse --show-toplevel)/docs/Makefile)
 
-pydoc_url=https://github.com/python/cpython.git
-pydoc_ver=v3.13.3
-pydoc_repo=cpython
-pydoc_path=Doc
+doc_url=https://github.com/sphinx-doc/sphinx.git
+doc_ver=v8.2.3
+doc_repo=sphinx
+doc_path=doc
 
 tmpdir=/tmp/sphinxnotes-fasthtml-bench
 echo "tmpdir: $tmpdir"
@@ -18,17 +18,14 @@ if [ -z "$USE_CACHE" ]; then
     rm -rf $tmpdir || true
     mkdir -p $tmpdir || true
     cd $tmpdir
-    git clone --quiet --branch $pydoc_ver --depth 1 $pydoc_url
-    cd $pydoc_repo/$pydoc_path
-    make venv
+    git clone --quiet --branch $doc_ver --depth 1 $doc_url
+    cd $doc_repo/$doc_path
 else
-    cd $tmpdir/$pydoc_repo
+    cd $tmpdir/$doc_repo
     git restore .
     git clean -fd .
-    cd $pydoc_path
+    cd $doc_path
 fi
-
-source ./venv/bin/activate
 
 python --version
 python -m pip install sphinx==$sphinx_ver sphinxnotes-fasthtml >/dev/null
