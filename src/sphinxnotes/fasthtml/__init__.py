@@ -93,8 +93,8 @@ class FastHTMLBuilder(StandaloneHTMLBuilder):
         # Do not build mo files.
         overwrite('gettext_auto_build', False)
         # Prevent intersphinx cache expiration.
-        # See also https://github.com/sphinx-doc/sphinx/pull/12514
-        overwrite('intersphinx_cache_limit', 999, optional=True)
+        # https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html#confval-intersphinx_cache_limit
+        overwrite('intersphinx_cache_limit', -1, optional=True)
 
     def _restore_config(self) -> None:
         """
