@@ -1,5 +1,4 @@
 .. This file is generated from sphinx-notes/cookiecutter.
-   You need to consider modifying the TEMPLATE or modifying THIS FILE.
 
 ====================
 sphinxnotes-fasthtml
@@ -15,7 +14,7 @@ sphinxnotes-fasthtml
    :target: https://pypi.python.org/pypi/sphinxnotes-fasthtml
    :alt: PyPI Package
 .. |download| image:: https://img.shields.io/pypi/dm/sphinxnotes-fasthtml
-   :target: https://pypi.python.org/pypi/sphinxnotes-fasthtml
+   :target: https://pypistats.org/packages/sphinxnotes-fasthtml
    :alt: PyPI Package Downloads
 
 |docs| |license| |pypi| |download|
